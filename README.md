@@ -1,12 +1,12 @@
-# OpenC2 Field
+# Tower Field
 
-A lightweight, field-deployable PWA companion to OpenC2. Designed for high-daylight visibility, touch operation, low-compute devices, and less-technical operators.
+A lightweight, field-deployable PWA companion to Tower. Designed for high-daylight visibility, touch operation, low-compute devices, and less-technical operators.
 
-![OpenC2 Field Screenshot](assets/OpenC2-Field-Screenshot.png)
+![Tower Field Screenshot](assets/Tower-Field-Screenshot.png)
 
 ## Overview
 
-| Attribute | OpenC2 (Desktop) | Field App |
+| Attribute | Tower (Desktop) | Field App |
 |-----------|------------------|-----------|
 | Platform | Electron | PWA (any browser) |
 | Target user | Trained power user | Field operator |
@@ -19,7 +19,7 @@ A lightweight, field-deployable PWA companion to OpenC2. Designed for high-dayli
 
 - **Real-time vehicle tracking** — View all connected vehicles on an interactive map
 - **Simple command interface** — Three primary actions: GO, STOP, RTL (Return to Launch)
-- **WebSocket connectivity** — Live telemetry from gateway
+- **WebSocket connectivity** — Live telemetry from server
 - **High-contrast field theme** — Readable in direct sunlight
 - **Touch-optimized** — 48px+ touch targets for gloved operation
 - **Offline capable** — PWA with installable manifest
@@ -44,8 +44,8 @@ A lightweight, field-deployable PWA companion to OpenC2. Designed for high-dayli
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/OpenC2-Field.git
-cd OpenC2-Field
+git clone https://github.com/yourusername/Tower-Field.git
+cd Tower-Field
 
 # Install dependencies
 npm install

@@ -1,12 +1,12 @@
 # Field App Technical Plan
 
-> **Purpose**: Scaffold and implementation plan for a lightweight, field-deployable PWA companion to OpenC2. Designed for high-daylight visibility, touch operation, low-compute devices, and less-technical operators.
+> **Purpose**: Scaffold and implementation plan for a lightweight, field-deployable PWA companion to Tower. Designed for high-daylight visibility, touch operation, low-compute devices, and less-technical operators.
 
 ---
 
 ## Overview
 
-| Attribute | OpenC2 (Desktop) | Field App |
+| Attribute | Tower (Desktop) | Field App |
 |-----------|------------------|-----------|
 | Platform | Electron | PWA (any browser) |
 | Target user | Trained power user | Field operator |
@@ -170,7 +170,7 @@ field-app/
 │   │
 │   ├── hooks/
 │   │   ├── index.ts
-│   │   ├── useGateway.ts         # WebSocket connection
+│   │   ├── useServer.ts          # WebSocket connection
 │   │   └── useWakeLock.ts        # Prevent screen sleep
 │   │
 │   ├── types/
@@ -232,11 +232,11 @@ import { Map } from './components/Map';
 import { CommandBar } from './components/CommandBar';
 import { StatusBanner } from './components/StatusBanner';
 import { VehicleList } from './components/VehicleList';
-import { useGateway } from './hooks/useGateway';
+import { useServer } from './hooks/useServer';
 import './styles/index.css';
 
 export function App() {
-  useGateway(); // Connect to gateway on mount
+  useServer(); // Connect to server on mount
 
   return (
     <div className="app">
@@ -317,16 +317,16 @@ export function CommandBar() {
 }
 ```
 
-### useGateway.ts
+### useServer.ts
 
 ```tsx
 import { useEffect, useRef } from 'react';
 import { useVehicleStore, useAppStore } from '../stores';
 
-const GATEWAY_URL = 'ws://gateway.local:9000';
+const SERVER_URL = 'ws://server.local:9000';
 const RECONNECT_DELAY = 3000;
 
-export function useGateway() {
+export function useServer() {
   const wsRef = useRef<WebSocket | null>(null);
   const setConnected = useAppStore((s) => s.setConnected);
   const updateInstance = useVehicleStore((s) => s.updateInstance);
@@ -335,7 +335,7 @@ export function useGateway() {
     let reconnectTimer: number;
 
     function connect() {
-      const ws = new WebSocket(GATEWAY_URL);
+      const ws = new WebSocket(SERVER_URL);
       wsRef.current = ws;
 
       ws.onopen = () => {
@@ -624,7 +624,7 @@ export interface Command {
   timestamp: number;
 }
 
-// Gateway message types
+// Server message types
 export interface TelemetryMessage {
   type: 'telemetry';
   vehicleId: string;
@@ -637,7 +637,7 @@ export interface CommandAckMessage {
   success: boolean;
 }
 
-export type GatewayMessage = TelemetryMessage | CommandAckMessage;
+export type ServerMessage = TelemetryMessage | CommandAckMessage;
 ```
 
 ---
@@ -677,7 +677,7 @@ export const useVehicleStore = create<VehicleStore>((set, get) => ({
 
   sendCommand: (vehicleId, type) => {
     if (!vehicleId) return;
-    // Command dispatch handled by gateway hook
+    // Command dispatch handled by server hook
     console.log(`Command: ${type} -> ${vehicleId}`);
   },
 }));
@@ -711,14 +711,14 @@ export const useAppStore = create<AppStore>((set) => ({
 
 ### Phase 1: Foundation (3-4 days)
 - [ ] Initialize Vite project with React + TypeScript
-- [ ] Set up ESLint, Prettier (copy from OpenC2)
+- [ ] Set up ESLint, Prettier (copy from Tower)
 - [ ] Create PWA manifest and icons
 - [ ] Implement high-contrast CSS variables
 - [ ] Basic Leaflet map rendering
 
 ### Phase 2: Core Features (4-5 days)
 - [ ] Vehicle store with Zustand
-- [ ] Gateway WebSocket hook with reconnection
+- [ ] Server WebSocket hook with reconnection
 - [ ] Vehicle markers on map
 - [ ] Vehicle list component
 - [ ] Command bar (GO/STOP/RTL)
@@ -752,16 +752,16 @@ export const useAppStore = create<AppStore>((set) => ({
 
 ---
 
-## Gateway Integration Notes
+## Server Integration Notes
 
-The field app connects to the same Go gateway as OpenC2. Gateway URL should be configurable:
+The field app connects to the same Go server as Tower. Server URL should be configurable:
 
 ```ts
 // Environment-based or runtime config
-const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL || 'ws://gateway.local:9000';
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'ws://server.local:9000';
 ```
 
-Field deployments typically run gateway on:
+Field deployments typically run server on:
 - Raspberry Pi on vehicle network
 - Edge compute device in command vehicle
 - Cloud relay for remote operations
